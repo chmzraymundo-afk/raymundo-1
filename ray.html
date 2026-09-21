@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeamLab - Plataforma de Cálculo Estructural y Análisis de Vigas</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- MathJax for rendering engineering equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            800: '#0A192F',
+                            900: '#020C1B',
+                            700: '#112240',
+                            600: '#1D3557'
+                        },
+                        techGold: {
+                            500: '#FFB703',
+                            600: '#FB8500'
+                        },
+                        steel: {
+                            100: '#F8FAFC',
+                            200: '#E2E8F0',
+                            500: '#64748B',
+                            800: '#1E293B'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(17, 34, 64, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .accent-gradient {
+            background: linear-gradient(135deg, #FFB703 0%, #FB8500 100%);
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #E2E8F0 0%, #FFB703 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        code[class*="language-"] {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        canvas {
+            touch-action: none;
+        }
+    </style>
+</head>
+<body class="bg-navy-900 text-slate-200 font-sans antialiased selection:bg-techGold-500 selection:text-navy-900">
+
+    <nav class="fixed top-0 w-full z-50 glass-panel border-b border-slate-800/80 px-4 lg:px-8 py-3.5 transition-all duration-300">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg accent-gradient flex items-center justify-center text-navy-900 font-black text-xl shadow-lg shadow-techGold-500/20">
+                    <i class="fa-solid fa-cubes-stacked"></i>
+                </div>
+                <span class="text-xl font-extrabold tracking-tight text-white">Beam<span class="text-techGold-500">Lab</span></span>
+            </div>
+
+            <!-- Navigation Links -->
+            <div class="hidden md:flex items-center gap-8 font-medium text-sm">
+                <a href="#hero" class="text-slate-300 hover:text-techGold-500 transition-colors">Inicio</a>
+                <a href="#teoria" class="text-slate-300 hover:text-techGold-500 transition-colors">Teoría y Fundamentos</a>
+                <a href="#calculadora" class="text-slate-300 hover:text-techGold-500 transition-colors">Calculadora Interactiva</a>
+                <a href="#codigo" class="text-slate-300 hover:text-techGold-500 transition-colors">Documentación de Código</a>
+            </div>
+
+            <a href="#calculadora" class="px-4 py-2 rounded-lg accent-gradient text-navy-900 font-bold text-sm hover:opacity-90 transition-all shadow-md shadow-techGold-500/20">
+                Lanzar Demo <i class="fa-solid fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+    </nav>
+
+    <section id="hero" class="relative min-h-screen pt-28 pb-16 flex items-center justify-center overflow-hidden bg-gradient-to-b from-navy-900 via-navy-800 to-navy-900">
+        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#FFB703_1px,transparent_1px)] [background-size:24px_24px]"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-panel text-techGold-500 text-xs font-semibold uppercase tracking-wider mb-6 border border-techGold-500/30">
+                <i class="fa-solid fa-microchip"></i> Software de Ingeniería Mecánica y Civil
+            </div>
+            
+            <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+                Análisis y Cálculo Estructural de <span class="text-gradient">Vigas Continuas</span>
+            </h1>
+
+            <p class="max-w-3xl mx-auto text-lg sm:text-xl text-slate-400 font-light mb-10 leading-relaxed">
+                Optimice el diseño estructural, determine deflexiones máximas y genere diagramas de momentos flectores y fuerzas cortantes en tiempo real con nuestra herramienta algorítmica de vanguardia.
+            </p>
+
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                <a href="#calculadora" class="w-full sm:w-auto px-8 py-4 rounded-xl accent-gradient text-navy-900 font-extrabold text-base hover:scale-105 transition-all shadow-xl shadow-techGold-500/20 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-calculator"></i> Probar Calculadora Ahora
+                </a>
+                <a href="#teoria" class="w-full sm:w-auto px-8 py-4 rounded-xl glass-panel text-slate-200 font-semibold text-base hover:bg-slate-800/80 border border-slate-700 transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-book-open"></i> Leer Fundamentos Teóricos
+                </a>
+            </div>
+
+            <!-- Features Grid Header -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16 pt-10 border-t border-slate-800/80 text-left">
+                <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                    <div class="text-techGold-500 text-xl font-bold mb-1"><i class="fa-solid fa-bolt"></i> Instantáneo</div>
+                    <p class="text-xs text-slate-400">Cálculos analíticos precisos en tiempo real mediante algoritmos numéricos optimizados.</p>
+                </div>
+                <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                    <div class="text-techGold-500 text-xl font-bold mb-1"><i class="fa-solid fa-chart-area"></i> Diagramas DFC/DMF</div>
+                    <p class="text-xs text-slate-400">Renderizado de diagramas de momento y cortante en Canvas HTML5 vectorizado.</p>
+                </div>
+                <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                    <div class="text-techGold-500 text-xl font-bold mb-1"><i class="fa-solid fa-compass-drafting"></i> Rigidez EI</div>
+                    <p class="text-xs text-slate-400">Evaluación de la ecuación de la curva elástica con propiedades elásticas reales.</p>
+                </div>
+                <div class="glass-panel p-4 rounded-xl border border-slate-800">
+                    <div class="text-techGold-500 text-xl font-bold mb-1"><i class="fa-solid fa-code"></i> 100% Open Code</div>
+                    <p class="text-xs text-slate-400">Código JS estructurado y documentado paso a paso para fines académicos y de desarrollo.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="teoria" class="py-20 bg-navy-800 border-t border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-xs font-bold text-techGold-500 uppercase tracking-widest mb-2">MARCO TEÓRICO Y FÍSICO</h2>
+                <p class="text-3xl sm:text-4xl font-extrabold text-white">Fundamentos del Análisis Estructural</p>
+                <div class="w-20 h-1 accent-gradient mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Theory Card 1 -->
+                <div class="glass-panel p-6 rounded-2xl border border-slate-800 hover:border-slate-700 transition-all">
+                    <div class="w-12 h-12 rounded-xl bg-techGold-500/10 text-techGold-500 flex items-center justify-center text-2xl mb-5">
+                        <i class="fa-solid fa-scale-balanced"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">1. Equilibrio Estático</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed mb-4">
+                        Para que una viga simplemente apoyada se mantenga en reposo bajo la acción de cargas externas, debe cumplir las ecuaciones fundamentales de la estática en el plano:
+                    </p>
+                    <div class="bg-navy-900/80 p-3 rounded-lg text-center font-mono text-xs text-techGold-500 border border-slate-800">
+                        $$\sum F_y = 0 \quad \text{y} \quad \sum M_A = 0$$
+                    </div>
+                    <p class="text-xs text-slate-500 mt-3">
+                        Esto nos permite despejar las reacciones de soporte en los apoyos $R_A$ (izquierdo) y $R_B$ (derecho).
+                    </p>
+                </div>
+
+                <!-- Theory Card 2 -->
+                <div class="glass-panel p-6 rounded-2xl border border-slate-800 hover:border-slate-700 transition-all">
+                    <div class="w-12 h-12 rounded-xl bg-techGold-500/10 text-techGold-500 flex items-center justify-center text-2xl mb-5">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">2. Cortante y Momento Flector</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed mb-4">
+                        La fuerza cortante $V(x)$ representa la suma algebraica de todas las fuerzas verticales a la izquierda de la sección $x$. El momento flector $M(x)$ es la suma de los momentos resultantes.
+                    </p>
+                    <div class="bg-navy-900/80 p-3 rounded-lg text-center font-mono text-xs text-techGold-500 border border-slate-800">
+                        $$V(x) = \frac{dM(x)}{dx}, \quad w(x) = -\frac{dV(x)}{dx}$$
+                    </div>
+                    <p class="text-xs text-slate-500 mt-3">
+                        El momento flector máximo ocurre exactamente donde la fuerza cortante $V(x)$ cruza por cero.
+                    </p>
+                </div>
+
+                <!-- Theory Card 3 -->
+                <div class="glass-panel p-6 rounded-2xl border border-slate-800 hover:border-slate-700 transition-all">
+                    <div class="w-12 h-12 rounded-xl bg-techGold-500/10 text-techGold-500 flex items-center justify-center text-2xl mb-5">
+                        <i class="fa-solid fa-wave-square"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">3. Deflexión y Ecuación de Euler-Bernoulli</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed mb-4">
+                        La deformación o curva elástica $v(x)$ de la viga bajo flexión depende directamente de la rigidez a la flexión ($EI$), gobernada por la ecuación diferencial:
+                    </p>
+                    <div class="bg-navy-900/80 p-3 rounded-lg text-center font-mono text-xs text-techGold-500 border border-slate-800">
+                        $$EI \frac{d^2v}{dx^2} = M(x)$$
+                    </div>
+                    <p class="text-xs text-slate-500 mt-3">
+                        Donde $E$ es el Módulo de Elasticidad del material y $I$ es el Momento de Inercia de la sección transversal.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="calculadora" class="py-20 bg-navy-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-xs font-bold text-techGold-500 uppercase tracking-widest mb-2">HERRAMIENTA EN TIEMPO REAL</h2>
+                <p class="text-3xl sm:text-4xl font-extrabold text-white">Calculadora Estructural de Vigas</p>
+                <p class="text-slate-400 text-sm max-w-2xl mx-auto mt-2">
+                    Ingrese la geometría, cargas mecánicas y módulo de rigidez para simular de inmediato las deformadas y diagramas mecánicos.
+                </p>
+            </div>
+
+            <!-- Calculator Layout Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Controls Side (4 Cols) -->
+                <div class="lg:col-span-4 glass-panel p-6 rounded-2xl border border-slate-800 shadow-xl h-fit">
+                    <h3 class="text-lg font-bold text-white mb-4 pb-2 border-b border-slate-800 flex items-center justify-between">
+                        <span>Parámetros de Entrada</span>
+                        <i class="fa-solid fa-sliders text-techGold-500"></i>
+                    </h3>
+
+                    <form id="beamForm" class="space-y-4">
+                        <!-- Longitud -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Longitud de la Viga ($L$) [m]</label>
+                            <input type="number" id="inputL" value="6.0" step="0.1" min="0.5" max="30" class="w-full bg-navy-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-techGold-500 transition-colors">
+                        </div>
+
+                        <!-- Carga Puntual P -->
+                        <div class="bg-navy-800/50 p-3 rounded-xl border border-slate-800/80 space-y-3">
+                            <span class="text-xs font-bold text-techGold-500 uppercase tracking-wider block">Carga Puntual ($P$)</span>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">Magnitud $P$ [kN]</label>
+                                    <input type="number" id="inputP" value="20.0" step="1" class="w-full bg-navy-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white font-mono text-sm focus:outline-none focus:border-techGold-500">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">Posición $a$ [m]</label>
+                                    <input type="number" id="inputA" value="2.0" step="0.1" min="0" class="w-full bg-navy-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white font-mono text-sm focus:outline-none focus:border-techGold-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Carga Distribuida w -->
+                        <div class="bg-navy-800/50 p-3 rounded-xl border border-slate-800/80">
+                            <label class="block text-xs font-bold text-techGold-500 uppercase tracking-wider mb-1">Carga Distribuida ($w$) [kN/m]</label>
+                            <input type="number" id="inputW" value="5.0" step="0.5" min="0" class="w-full bg-navy-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-techGold-500">
+                        </div>
+
+                        <!-- Propiedades del Material / Rigidez -->
+                        <div class="bg-navy-800/50 p-3 rounded-xl border border-slate-800/80 space-y-3">
+                            <span class="text-xs font-bold text-slate-300 uppercase tracking-wider block">Rigidez Flexional ($E \cdot I$)</span>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">Módulo $E$ [GPa]</label>
+                                    <input type="number" id="inputE" value="200" step="5" class="w-full bg-navy-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white font-mono text-sm focus:outline-none focus:border-techGold-500">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">Inercia $I$ [$cm^4$]</label>
+                                    <input type="number" id="inputI" value="8000" step="100" class="w-full bg-navy-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white font-mono text-sm focus:outline-none focus:border-techGold-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <button type="button" id="btnCalculate" class="w-full py-3 rounded-xl accent-gradient text-navy-900 font-extrabold text-sm hover:opacity-95 transition-all shadow-lg shadow-techGold-500/20">
+                            <i class="fa-solid fa-play"></i> CALCULAR Y SIMULAR
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Results & Canvas Visualization Side (8 Cols) -->
+                <div class="lg:col-span-8 space-y-6">
+                    <!-- Results Metrics Banner -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div class="glass-panel p-4 rounded-xl border border-slate-800 text-center">
+                            <span class="text-[11px] font-medium text-slate-400 block uppercase">Reacción $R_A$</span>
+                            <span id="resRA" class="text-xl font-bold font-mono text-techGold-500">0.00 kN</span>
+                        </div>
+                        <div class="glass-panel p-4 rounded-xl border border-slate-800 text-center">
+                            <span class="text-[11px] font-medium text-slate-400 block uppercase">Reacción $R_B$</span>
+                            <span id="resRB" class="text-xl font-bold font-mono text-techGold-500">0.00 kN</span>
+                        </div>
+                        <div class="glass-panel p-4 rounded-xl border border-slate-800 text-center">
+                            <span class="text-[11px] font-medium text-slate-400 block uppercase">Momento Máx. ($M_{máx}$)</span>
+                            <span id="resMMax" class="text-xl font-bold font-mono text-emerald-400">0.00 kN·m</span>
+                        </div>
+                        <div class="glass-panel p-4 rounded-xl border border-slate-800 text-center">
+                            <span class="text-[11px] font-medium text-slate-400 block uppercase">Deflexión ($\delta_{máx}$)</span>
+                            <span id="resDeflexion" class="text-xl font-bold font-mono text-sky-400">0.00 mm</span>
+                        </div>
+                    </div>
+
+                    <!-- Canvas Graphic Display Area -->
+                    <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-6">
+                        <!-- Schema Diagram -->
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300">Esquema Mecánico de la Viga</h4>
+                                <span class="text-[10px] text-slate-500">Geometría y Cargas</span>
+                            </div>
+                            <div class="bg-navy-900 rounded-xl p-2 border border-slate-800/80 overflow-hidden">
+                                <canvas id="canvasScheme" height="150" class="w-full"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Shear Force Diagram (DFC) -->
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-amber-400">Diagrama de Fuerza Cortante (DFC) [kN]</h4>
+                                <span id="labelVMax" class="text-[10px] text-slate-400 font-mono">Vmáx: 0 kN</span>
+                            </div>
+                            <div class="bg-navy-900 rounded-xl p-2 border border-slate-800/80 overflow-hidden">
+                                <canvas id="canvasShear" height="130" class="w-full"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Bending Moment Diagram (DMF) -->
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Diagrama de Momento Flector (DMF) [kN·m]</h4>
+                                <span id="labelMMax" class="text-[10px] text-slate-400 font-mono">Mmáx: 0 kN·m</span>
+                            </div>
+                            <div class="bg-navy-900 rounded-xl p-2 border border-slate-800/80 overflow-hidden">
+                                <canvas id="canvasMoment" height="130" class="w-full"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="codigo" class="py-20 bg-navy-800 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-xs font-bold text-techGold-500 uppercase tracking-widest mb-2">ARQUITECTURA DE SOFTWARE</h2>
+                <p class="text-3xl sm:text-4xl font-extrabold text-white">Documentación del Código</p>
+                <p class="text-slate-400 text-sm max-w-2xl mx-auto mt-2">
+                    Explicación técnica del desarrollo modular implementado en HTML5, CSS3 y JavaScript vanilla para resolver la estática y cinemática de la viga.
+                </p>
+            </div>
+
+            <!-- Code Tabs Navigation -->
+            <div class="glass-panel p-2 rounded-2xl border border-slate-800 max-w-4xl mx-auto mb-8 flex flex-wrap gap-2 justify-center">
+                <button id="tabBtnJS" onclick="switchTab('js')" class="px-5 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition-all accent-gradient text-navy-900 font-bold">
+                    <i class="fa-brands fa-js mr-1.5"></i> Lógica Matemática (JavaScript)
+                </button>
+                <button id="tabBtnCanvas" onclick="switchTab('canvas')" class="px-5 py-2.5 rounded-xl font-medium text-xs sm:text-sm text-slate-400 hover:text-white transition-all">
+                    <i class="fa-solid fa-paintbrush mr-1.5"></i> Renderizado Canvas HTML5
+                </button>
+                <button id="tabBtnCSS" onclick="switchTab('css')" class="px-5 py-2.5 rounded-xl font-medium text-xs sm:text-sm text-slate-400 hover:text-white transition-all">
+                    <i class="fa-brands fa-css3-alt mr-1.5"></i> Diseño Estético (CSS3/Tailwind)
+                </button>
+            </div>
+
+            <!-- Code Panels Wrapper -->
+            <div class="max-w-4xl mx-auto">
+                <!-- JS Code Panel -->
+                <div id="tabJS" class="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
+                    <div class="bg-navy-900/90 px-4 py-3 border-b border-slate-800 flex justify-between items-center text-xs text-slate-400 font-mono">
+                        <span><i class="fa-regular fa-file-code text-techGold-500 mr-2"></i>beam-solver.js</span>
+                        <span>Cálculo de Reacciones y Superposición</span>
+                    </div>
+                    <pre class="p-4 text-xs font-mono text-slate-300 overflow-x-auto leading-relaxed bg-navy-900/40"><code>function calculateBeamPhysics(L, P, a, w, E, I) {
+    // 1. Reacciones de Apoyo (Superposición de P + w)
+    // Para carga puntual P: Ra_p = P * (L - a) / L, Rb_p = P * a / L
+    // Para carga uniforme w: Ra_w = w * L / 2, Rb_w = w * L / 2
+    const Ra = (P * (L - a) / L) + (w * L / 2);
+    const Rb = (P * a / L) + (w * L / 2);
+
+    // 2. Muestreo discreto a lo largo de x [0 -> L]
+    const steps = 200;
+    const dx = L / steps;
+    let points = [];
+
+    for (let i = 0; i <= steps; i++) {
+        let x = i * dx;
+        
+        // Cortante V(x)
+        let V = Ra - (w * x) - (x >= a ? P : 0);
+        
+        // Momento Flector M(x)
+        let M = (Ra * x) - (w * x * x / 2) - (x >= a ? P * (x - a) : 0);
+        
+        points.push({ x, V, M });
+    }
+    return { Ra, Rb, points };
+}</code></pre>
+                </div>
+
+                <!-- Canvas Code Panel -->
+                <div id="tabCanvas" class="glass-panel rounded-2xl border border-slate-800 overflow-hidden hidden">
+                    <div class="bg-navy-900/90 px-4 py-3 border-b border-slate-800 flex justify-between items-center text-xs text-slate-400 font-mono">
+                        <span><i class="fa-regular fa-file-code text-techGold-500 mr-2"></i>diagram-render.js</span>
+                        <span>Trazado Dinámico Vectorial en Canvas</span>
+                    </div>
+                    <pre class="p-4 text-xs font-mono text-slate-300 overflow-x-auto leading-relaxed bg-navy-900/40"><code>function drawDiagram(canvas, dataPoints, keyName, colorFill, colorLine) {
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width;
+    const H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    // Escalar valores al alto/ancho del Canvas
+    const padding = 20;
+    const maxVal = Math.max(...dataPoints.map(p => Math.abs(p[keyName])), 0.1);
+    const scaleY = (H / 2 - padding) / maxVal;
+    const scaleX = (W - 2 * padding) / dataPoints[dataPoints.length - 1].x;
+
+    // Eje Neutro Center Line
+    ctx.beginPath();
+    ctx.strokeStyle = '#64748B';
+    ctx.moveTo(padding, H / 2);
+    ctx.lineTo(W - padding, H / 2);
+    ctx.stroke();
+
+    // Relleno Poligonal del Diagrama
+    ctx.beginPath();
+    ctx.moveTo(padding, H / 2);
+    dataPoints.forEach(p => {
+        let cx = padding + p.x * scaleX;
+        let cy = H / 2 - (p[keyName] * scaleY);
+        ctx.lineTo(cx, cy);
+    });
+    ctx.lineTo(W - padding, H / 2);
+    ctx.fillStyle = colorFill;
+    ctx.fill();
+    ctx.strokeStyle = colorLine;
+    ctx.stroke();
+}</code></pre>
+                </div>
+
+                <!-- CSS Code Panel -->
+                <div id="tabCSS" class="glass-panel rounded-2xl border border-slate-800 overflow-hidden hidden">
+                    <div class="bg-navy-900/90 px-4 py-3 border-b border-slate-800 flex justify-between items-center text-xs text-slate-400 font-mono">
+                        <span><i class="fa-regular fa-file-code text-techGold-500 mr-2"></i>styles.css</span>
+                        <span>Efectos Glassmorphism y Paleta Técnica</span>
+                    </div>
+                    <pre class="p-4 text-xs font-mono text-slate-300 overflow-x-auto leading-relaxed bg-navy-900/40"><code>.glass-panel {
+    background: rgba(17, 34, 64, 0.75);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.accent-gradient {
+    background: linear-gradient(135deg, #FFB703 0%, #FB8500 100%);
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, #E2E8F0 0%, #FFB703 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-navy-900 border-t border-slate-800 py-10 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 space-y-4">
+            <div class="flex justify-center items-center gap-2 text-slate-300 font-bold text-base">
+                <i class="fa-solid fa-cubes-stacked text-techGold-500"></i> BeamLab
+            </div>
+            <p>Plataforma para el cálculo analítico y simulación de vigas en ingeniería civil y mecánica.</p>
+            <p>© 2026 BeamLab Structural Technologies. Desarrollado con HTML5, CSS3 & JavaScript.</p>
+        </div>
+    </footer>
+
+    <script>
+        function switchTab(tab) {
+            const tabs = ['js', 'canvas', 'css'];
+            tabs.forEach(t => {
+                const el = document.getElementById('tab' + t.toUpperCase());
+                const btn = document.getElementById('tabBtn' + (t === 'js' ? 'JS' : t.charAt(0).toUpperCase() + t.slice(1)));
+                
+                if (t === tab) {
+                    el.classList.remove('hidden');
+                    btn.className = "px-5 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition-all accent-gradient text-navy-900 font-bold";
+                } else {
+                    el.classList.add('hidden');
+                    btn.className = "px-5 py-2.5 rounded-xl font-medium text-xs sm:text-sm text-slate-400 hover:text-white transition-all";
+                }
+            });
+        }
+
+        function solveBeamSystem() {
+            // Read UI inputs
+            const L = parseFloat(document.getElementById('inputL').value) || 6.0;
+            const P = parseFloat(document.getElementById('inputP').value) || 0.0;
+            let a = parseFloat(document.getElementById('inputA').value) || 0.0;
+            const w = parseFloat(document.getElementById('inputW').value) || 0.0;
+            const E_GPa = parseFloat(document.getElementById('inputE').value) || 200;
+            const I_cm4 = parseFloat(document.getElementById('inputI').value) || 8000;
+
+            // Constrain 'a' to beam length
+            if (a > L) {
+                a = L;
+                document.getElementById('inputA').value = L;
+            }
+
+            // Units conversion to SI (N, m, Pa)
+            const E = E_GPa * 1e9; // Pa
+            const I = I_cm4 * 1e-8; // m^4
+            const P_N = P * 1000; // N
+            const w_N = w * 1000; // N/m
+
+            // 1. Calculate Support Reactions
+            const Ra_N = (P_N * (L - a) / L) + (w_N * L / 2);
+            const Rb_N = (P_N * a / L) + (w_N * L / 2);
+
+            const Ra_kN = Ra_N / 1000;
+            const Rb_kN = Rb_N / 1000;
+
+            // 2. Generate Discretized Points along Beam
+            const steps = 300;
+            const dx = L / steps;
+            let points = [];
+            let maxM = 0;
+            let maxV = 0;
+
+            for (let i = 0; i <= steps; i++) {
+                const x = i * dx;
+
+                // Shear Force V(x)
+                let V_N = Ra_N - (w_N * x) - (x >= a ? P_N : 0);
+                
+                // Bending Moment M(x)
+                let M_N = (Ra_N * x) - (w_N * x * x / 2) - (x >= a ? P_N * (x - a) : 0);
+
+                const V_kN = V_N / 1000;
+                const M_kNm = M_N / 1000;
+
+                if (Math.abs(V_kN) > maxV) maxV = Math.abs(V_kN);
+                if (Math.abs(M_kNm) > maxM) maxM = Math.abs(M_kNm);
+
+                points.push({ x, V: V_kN, M: M_kNm });
+            }
+
+            // 3. Deflection calculation approximation (Max deflection using superposition)
+            // Deflection under uniform load: 5 w L^4 / (384 E I)
+            // Deflection under point load (approx max): P * a * (L^2 - a^2)^1.5 / (9 * sqrt(3) * E * I * L)
+            const def_w = (5 * w_N * Math.pow(L, 4)) / (384 * E * I);
+            let def_p = 0;
+            if (P_N > 0 && a > 0 && a < L) {
+                def_p = (P_N * a * Math.pow(L*L - a*a, 1.5)) / (9 * Math.sqrt(3) * E * I * L);
+            }
+            const totalDeflection_mm = (def_w + def_p) * 1000; // in mm
+
+            // Update UI Numerical Cards
+            document.getElementById('resRA').innerText = `${Ra_kN.toFixed(2)} kN`;
+            document.getElementById('resRB').innerText = `${Rb_kN.toFixed(2)} kN`;
+            document.getElementById('resMMax').innerText = `${maxM.toFixed(2)} kN·m`;
+            document.getElementById('resDeflexion').innerText = `${totalDeflection_mm.toFixed(2)} mm`;
+
+            document.getElementById('labelVMax').innerText = `Vmáx: ${maxV.toFixed(2)} kN`;
+            document.getElementById('labelMMax').innerText = `Mmáx: ${maxM.toFixed(2)} kN·m`;
+
+            // 4. Render Dynamic Visualizations on Canvas
+            renderBeamScheme(L, P, a, w);
+            renderDiagram('canvasShear', points, 'V', 'rgba(251, 133, 0, 0.25)', '#FB8500');
+            renderDiagram('canvasMoment', points, 'M', 'rgba(16, 185, 129, 0.25)', '#10B981');
+        }
+
+        function renderBeamScheme(L, P, a, w) {
+            const canvas = document.getElementById('canvasScheme');
+            const ctx = canvas.getContext('2d');
+            
+            // Adjust canvas internal dimensions to parent container width
+            canvas.width = canvas.parentElement.clientWidth;
+            const W = canvas.width;
+            const H = canvas.height;
+
+            ctx.clearRect(0, 0, W, H);
+
+            const pad = 40;
+            const beamY = H / 2 + 10;
+            const beamW = W - 2 * pad;
+
+            // Draw Main Beam Body
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(pad, beamY - 6, beamW, 12);
+            ctx.strokeStyle = '#94A3B8';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(pad, beamY - 6, beamW, 12);
+
+            // Left Support (Pin)
+            ctx.beginPath();
+            ctx.fillStyle = '#FFB703';
+            ctx.moveTo(pad, beamY + 6);
+            ctx.lineTo(pad - 10, beamY + 22);
+            ctx.lineTo(pad + 10, beamY + 22);
+            ctx.closePath();
+            ctx.fill();
+
+            // Right Support (Roller)
+            ctx.beginPath();
+            ctx.fillStyle = '#FFB703';
+            ctx.arc(W - pad, beamY + 14, 8, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Distributed Load (w) Vectors
+            if (w > 0) {
+                ctx.strokeStyle = '#38BDF8';
+                ctx.fillStyle = '#38BDF8';
+                ctx.lineWidth = 1;
+                const arrows = 12;
+                const step = beamW / (arrows - 1);
+
+                // Draw top line of distributed load
+                ctx.beginPath();
+                ctx.moveTo(pad, beamY - 35);
+                ctx.lineTo(W - pad, beamY - 35);
+                ctx.stroke();
+
+                for (let i = 0; i < arrows; i++) {
+                    let x = pad + i * step;
+                    ctx.beginPath();
+                    ctx.moveTo(x, beamY - 35);
+                    ctx.lineTo(x, beamY - 8);
+                    ctx.stroke();
+                    // Arrow tip
+                    ctx.beginPath();
+                    ctx.moveTo(x - 3, beamY - 13);
+                    ctx.lineTo(x, beamY - 8);
+                    ctx.lineTo(x + 3, beamY - 13);
+                    ctx.fill();
+                }
+                ctx.font = '10px Inter';
+                ctx.fillText(`w = ${w} kN/m`, W / 2 - 25, beamY - 42);
+            }
+
+            // Point Load Vector (P)
+            if (P > 0) {
+                const px = pad + (a / L) * beamW;
+                ctx.strokeStyle = '#EF4444';
+                ctx.fillStyle = '#EF4444';
+                ctx.lineWidth = 3;
+
+                ctx.beginPath();
+                ctx.moveTo(px, beamY - 45);
+                ctx.lineTo(px, beamY - 8);
+                ctx.stroke();
+
+                // Arrowhead
+                ctx.beginPath();
+                ctx.moveTo(px - 5, beamY - 18);
+                ctx.lineTo(px, beamY - 8);
+                ctx.lineTo(px + 5, beamY - 18);
+                ctx.fill();
+
+                ctx.font = 'bold 11px Inter';
+                ctx.fillText(`P = ${P} kN`, px - 20, beamY - 50);
+            }
+        }
+
+        function renderDiagram(canvasId, points, key, fillColor, strokeColor) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.parentElement.clientWidth;
+            const W = canvas.width;
+            const H = canvas.height;
+
+            ctx.clearRect(0, 0, W, H);
+
+            const pad = 40;
+            const midY = H / 2;
+            const drawW = W - 2 * pad;
+
+            // Find Maximum Absolute Scale
+            const maxVal = Math.max(...points.map(p => Math.abs(p[key])), 0.1);
+            const scaleY = (H / 2 - 15) / maxVal;
+            const scaleX = drawW / points[points.length - 1].x;
+
+            // Draw Zero Baseline
+            ctx.beginPath();
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
+            ctx.moveTo(pad, midY);
+            ctx.lineTo(W - pad, midY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Plot Polygon Area
+            ctx.beginPath();
+            ctx.moveTo(pad, midY);
+
+            points.forEach(p => {
+                const cx = pad + p.x * scaleX;
+                // Invert Moment Diagram for Civil Engineering Convention (Positive downwards) if needed
+                const sign = (key === 'M') ? -1 : 1; 
+                const cy = midY - (p[key] * scaleY * sign);
+                ctx.lineTo(cx, cy);
+            });
+
+            ctx.lineTo(W - pad, midY);
+            ctx.closePath();
+
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+
+            // Plot Boundary Line
+            ctx.beginPath();
+            points.forEach((p, idx) => {
+                const cx = pad + p.x * scaleX;
+                const sign = (key === 'M') ? -1 : 1;
+                const cy = midY - (p[key] * scaleY * sign);
+                if (idx === 0) ctx.moveTo(cx, cy);
+                else ctx.lineTo(cx, cy);
+            });
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            solveBeamSystem();
+
+            document.getElementById('btnCalculate').addEventListener('click', solveBeamSystem);
+
+            // Auto calculate on input changes
+            const inputs = document.querySelectorAll('#beamForm input');
+            inputs.forEach(input => {
+                input.addEventListener('input', solveBeamSystem);
+            });
+
+            // Handle Responsive Resize
+            window.addEventListener('resize', solveBeamSystem);
+        });
+    </script>
+</body>
+</html>
